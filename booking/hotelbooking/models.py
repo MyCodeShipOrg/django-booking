@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.base import ModelBase
 
 
-class RoomTypes(models.Model):
+class RoomType(models.Model):
     name = models.CharField(max_length=200)
     price = models.CharField(max_length=100)
     count = models.IntegerField(default=0)
@@ -13,20 +13,20 @@ class RoomTypes(models.Model):
 
 class Room(models.Model):
     number = models.CharField(max_length=200)
-    room_type = models.ForeignKey(RoomTypes, on_delete=models.CASCADE,
+    room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE,
                                   related_name="rooms")
 
     def __str__(self):
         return "%s" % (self.number)
 
 
-class BookingsModelBase(ModelBase):
+class BookingModelBase(ModelBase):
     def __init__(cls, name, bases, attrs):
-        super(BookingsModelBase, cls).__init__(name, bases, attrs)
+        super(BookingModelBase, cls).__init__(name, bases, attrs)
         cls.duration = cls.calculate_duration()
 
 
-class Bookings(models.Model, metaclass=BookingsModelBase):
+class Booking(models.Model, metaclass=BookingModelBase):
     first_name = models.CharField(max_length=300)
     last_name = models.CharField(max_length=300)
     room = models.ForeignKey(Room, on_delete=models.CASCADE,
@@ -44,17 +44,21 @@ class Bookings(models.Model, metaclass=BookingsModelBase):
         pass
 
 
-class History(models.Model, metaclass=BookingsModelBase):
+class History(models.Model, metaclass=BookingModelBase):
     first_name = models.CharField(max_length=300)
     last_name = models.CharField(max_length=300)
     room = models.ForeignKey(Room, on_delete=models.CASCADE,
-                             related_name="booking")
+                             related_name="history")
     active = models.BooleanField(default=False)
     fromdate = models.DateTimeField()
     todate = models.DateTimeField()
 
     def __str__(self):
         return "%s %s %s" % (self.first_name, self.last_name, self.room)
+
+    @classmethod
+    def calculate_duration(cls):
+        pass
 # Status of a room (if available) or booked for a particular day
 # Read all active bookings on a room
 # Read all inactive bookings on a room
