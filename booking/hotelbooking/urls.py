@@ -2,6 +2,8 @@ from django.urls import path
 from hotelbooking import views
 
 urlpatterns = [
-    path('roomtype/', views.RoomTypeList.as_view()),
-    path('roomtype/<int:room_id>', views.RoomTypeDetail.as_view())
+    path('roomtypes/', views.RoomTypeList.as_view()),
+    path('roomtypes/<int:room_id>', views.RoomTypeDetail.as_view()),
+    path('rooms/', views.RoomList.as_view()),
+    path('rooms/<int:idx>', views.RoomDetail.as_view())
 ]

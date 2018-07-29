@@ -1,8 +1,24 @@
 from django.db import models
+from django.utils import timezone
 # from django.db.models.base import ModelBase
 
 
-class RoomType(models.Model):
+class TimeStamp(models.Model):
+    creation_date = models.DateTimeField(editable=False)
+    last_modified = models.DateTimeField(editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.creation_date:
+            self.creation_date = timezone.now()
+
+        self.last_modified = timezone.now()
+        return super(TimeStamp, self).save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class RoomType(TimeStamp):
     name = models.CharField(max_length=200)
     price = models.CharField(max_length=100)
     count = models.IntegerField(default=0)
@@ -12,7 +28,7 @@ class RoomType(models.Model):
         return "%s" % (self.name)
 
 
-class Room(models.Model):
+class Room(TimeStamp):
     number = models.CharField(max_length=200)
     room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE,
                                   related_name="rooms")
@@ -21,18 +37,15 @@ class Room(models.Model):
         return "%s" % (self.number)
 
 
-class BookingFields(models.Model):
+class BookingFields(TimeStamp):
     class Meta:
         abstract = True
 
     first_name = models.CharField(max_length=300)
     last_name = models.CharField(max_length=300)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE,
-                             related_name="booking")
     active = models.BooleanField(default=False)
     fromdate = models.DateTimeField()
     todate = models.DateTimeField()
-    createdAt = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "%s %s %s" % (self.first_name, self.last_name, self.room)
@@ -43,11 +56,13 @@ class BookingFields(models.Model):
 
 
 class Booking(BookingFields):
-    pass
+    room = models.ForeignKey(Room, on_delete=models.CASCADE,
+                             related_name="booking")
 
 
 class History(BookingFields):
-    pass
+    room = models.ForeignKey(Room, on_delete=models.CASCADE,
+                             related_name="History")
 
 
 # class BookingModelBase(ModelBase):
