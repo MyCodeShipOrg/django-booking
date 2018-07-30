@@ -32,6 +32,7 @@ class Room(TimeStamp):
     number = models.CharField(max_length=200)
     room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE,
                                   related_name="rooms")
+    vacant = models.BooleanField(default=True)
 
     def __str__(self):
         return "%s" % (self.number)
@@ -43,7 +44,10 @@ class BookingFields(TimeStamp):
 
     first_name = models.CharField(max_length=300)
     last_name = models.CharField(max_length=300)
+    email = models.CharField(max_length=300)
+    phone = models.CharField(max_length=300)
     active = models.BooleanField(default=False)
+    room = models.CharField(max_length=300)
     fromdate = models.DateTimeField()
     todate = models.DateTimeField()
 
@@ -56,13 +60,20 @@ class BookingFields(TimeStamp):
 
 
 class Booking(BookingFields):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE,
-                             related_name="booking")
+    roomtype = models.ForeignKey(RoomType, on_delete=models.CASCADE,
+                                 related_name="booking")
+
+    def save(self, *args, **kwargs):
+        super().save()
+        if timezone.now() < self.todate:
+            self.active = True
+
+        return super(Booking, self).save(*args, **kwargs)
 
 
 class History(BookingFields):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE,
-                             related_name="History")
+    roomtype = models.ForeignKey(RoomType, on_delete=models.CASCADE,
+                                 related_name="History")
 
 
 # class BookingModelBase(ModelBase):

@@ -3,8 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from hotelbooking.models import RoomType, Room
-from hotelbooking.serializers import RoomTypeSerializer, RoomSerializer
+from hotelbooking.serializers import RoomTypeSerializer, RoomSerializer, BookingSerializer
 from hotelbooking.utils import get_single_object
+
+import random
 
 
 class RoomTypeList(APIView):
@@ -99,3 +101,28 @@ class RoomDetail(APIView):
         room = get_single_object(idx, Room)
         room.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BookingList(APIView):
+    """
+    Create a booking or List All Bookings
+    """
+
+    def get(request):
+        pass
+
+    def post(request):
+        roomtype = RoomType.objects.get(name=request.data.roomtype)
+        rooms = roomtype.rooms.get(vacant=True)
+        room = random.choice(rooms)
+        serializer = BookingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(room=room)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
