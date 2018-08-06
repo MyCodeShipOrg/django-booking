@@ -108,12 +108,13 @@ class BookingList(APIView):
     Create a booking or List All Bookings
     """
 
-    def get(request):
-        pass
+    # def get(self, request):
+    #     pass
 
-    def post(request):
-        roomtype = RoomType.objects.get(name=request.data.roomtype)
-        rooms = roomtype.rooms.get(vacant=True)
+    def post(self, request):
+        # roomtype = RoomType.objects.get(name=request.data.roomtype)
+        rooms = Room.objects.filter(
+            room_type__name=request.data['room_type'], vacant=True)
         room = random.choice(rooms)
         serializer = BookingSerializer(data=request.data)
         if serializer.is_valid():
@@ -121,8 +122,3 @@ class BookingList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-

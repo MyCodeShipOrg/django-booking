@@ -60,19 +60,20 @@ class BookingFields(TimeStamp):
 
 
 class Booking(BookingFields):
-    roomtype = models.ForeignKey(RoomType, on_delete=models.CASCADE,
+    room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE,
                                  related_name="booking")
 
-    def save(self, *args, **kwargs):
-        super().save()
-        if timezone.now() < self.todate:
-            self.active = True
+    # def save(self, *args, **kwargs):
+    #     # super().save()
+    #     if timezone.now() < self.todate:
+    #         self.active = True
 
-        return super(Booking, self).save(*args, **kwargs)
+    #     return super().save(*args, **kwargs)
+    #     Should be done automatically. A task that checks everyday if timezone.now() < self.todate
 
 
 class History(BookingFields):
-    roomtype = models.ForeignKey(RoomType, on_delete=models.CASCADE,
+    room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE,
                                  related_name="History")
 
 
