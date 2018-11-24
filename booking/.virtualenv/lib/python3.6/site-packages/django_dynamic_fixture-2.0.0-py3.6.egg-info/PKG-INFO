@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: django-dynamic-fixture
+Version: 2.0.0
+Summary: A full library to create dynamic model instances for testing purposes.
+Home-page: https://github.com/paulocheque/django-dynamic-fixture
+Author: paulocheque
+Author-email: paulocheque@gmail.com
+License: MIT
+Description: UNKNOWN
+Keywords: python django testing fixture
+Platform: UNKNOWN
+Classifier: Framework :: Django
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: PyPy

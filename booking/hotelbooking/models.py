@@ -21,11 +21,18 @@ class TimeStamp(models.Model):
 class RoomType(TimeStamp):
     name = models.CharField(max_length=200)
     price = models.CharField(max_length=100)
-    count = models.IntegerField(default=0)
+    room_count = models.IntegerField(default=0) # num rooms
+    available_count = models.IntegerField(default=-1) # num available rooms
     services = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return "%s" % (self.name)
+
+    def save(self, *args, **kwargs):
+        # if not self.id, assign available_count
+        if self.room_count and self.available_count == -1:
+            self.available_count = self.room_count
+        super().save(*args, **kwargs)
 
 
 class Room(TimeStamp):
@@ -47,7 +54,7 @@ class BookingFields(TimeStamp):
     email = models.CharField(max_length=300)
     phone = models.CharField(max_length=300)
     active = models.BooleanField(default=False)
-    room = models.CharField(max_length=300)
+    room = models.CharField(max_length=300, blank=True, null=True)
     fromdate = models.DateTimeField()
     todate = models.DateTimeField()
 
@@ -62,6 +69,16 @@ class BookingFields(TimeStamp):
 class Booking(BookingFields):
     room_type = models.ForeignKey(RoomType, on_delete=models.CASCADE,
                                  related_name="booking")
+
+    @classmethod
+    def get_room_bookings(cls, room):
+        return cls.objects.filter(room__exact=room.number)
+
+    @classmethod
+    def get_room_type_bookings(cls, room_type):
+        return cls.objects.filter(room_type__exact=room_type.id)
+
+    # Modify available_count here.
 
     # def save(self, *args, **kwargs):
     #     # super().save()
